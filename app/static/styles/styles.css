@@ -4,3 +4,9 @@ body {
     min-height: 100vh;
     font-family: 'Comfortaa';
 }
+
+.line {
+    background-color: #0b5ed8;
+    width: 300px;
+    height: 3px;
+}
