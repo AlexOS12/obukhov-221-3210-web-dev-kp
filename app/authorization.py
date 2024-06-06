@@ -35,8 +35,11 @@ def load_user(user_id):
     
     # return None
 
-@bp.route('/login')
+@bp.route('/login', methods=["GET", "POST"])
 def login():
+    if request.method == "GET":
+        return render_template("auth.html")
+    
     login_user(User(1, "test", 1))
     target_page = request.args.get("next", url_for("index"))
     return redirect(target_page)
