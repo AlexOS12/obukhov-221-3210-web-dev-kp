@@ -4,4 +4,5 @@
 
 {% block content %}
     {{ trip_card_macro(trip.trip_no, trip.dep_city, trip.arr_city, trip.dep_time, trip.arr_time, trip.arr_time - trip.dep_time, trip.price, 'buy') }}
+    <script src="{{ url_for('static', filename='scripts/buy_ticket.js') }}"></script>
 {% endblock %}
