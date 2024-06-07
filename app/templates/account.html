@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% from 'trip_card_macro.html' import trip_card_macro %}
+
+{% block content %}
+<h4>Мои билеты</h4>
+
+<div class="d-flex justify-content-center mb-3">
+    <button class="btn btn-outline-secondary mx-auto">Показать старые билеты</button>
+</div>
+
+{{ trip_card_macro() }}
+{% endblock %}
