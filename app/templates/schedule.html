@@ -5,18 +5,18 @@
 {% block content %}
 <div class="container bg-light p-3 mb-3">
     <h4>Найти маршрут</h4>
-    <form action="POST">
+    <form method="POST">
         <div class="d-flex flex-wrap mb-2">
             <div class="form-floating flex-grow-1 me-3 mb-md-0 mb-3">
-                <input type="text" class="form-control" id="depart_city" name="depart_city" placeholder="" required>
+                <input type="text" class="form-control" id="depart_city" name="depart_city" placeholder="" value="{{ form.depart_city or '' }}" required>
                 <label for="depart_city">Город отправления</label>
             </div>
             <div class="form-floating flex-grow-1 me-3 mb-md-0 mb-3">
-                <input type="text" class="form-control" id="arrive_city" name="arrive_city" placeholder="" required>
+                <input type="text" class="form-control" id="arrive_city" name="arrive_city" placeholder="" value="{{ form.arrive_city or '' }}" required>
                 <label for="depart_city">Город прибытия</label>
             </div>
             <div class="form-floating flex-grow-1 me-3 mb-md-0 mb-3">
-                <input type="date" class="form-control" id="depart_date" name="depart_date" required>
+                <input type="date" class="form-control" id="depart_date" name="depart_date" value="{{ form.depart_date or '' }}" required>
                 <label for="depart_city">Дата отправления</label>
             </div>
             <div>
@@ -89,10 +89,19 @@
             </div>
         </div>
     </form>
+</div>
 
+<div>
+    {% if trips %}
+    {% for trip in trips %}
+    {{ trip_card_macro(trip.trip_no, trip.dep_city, trip.arr_city, trip.dep_time, trip.arr_time, trip.arr_time -
+    trip.dep_time, trip.price, 'buying') }}
+    {% endfor %}
+    {% endif %}
 </div>
 
 <script src="{{ url_for('static', filename='scripts/show_additional_filters.js') }}"></script>
-
+{#
 {{ trip_card_macro(123, 'Москва', 'Санкт-Петербург', '08:00', '12:00', '04:00', 5500, 'buying') }}
+#}
 {% endblock %}
