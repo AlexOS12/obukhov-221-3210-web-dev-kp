@@ -1,5 +1,30 @@
 {% extends 'base.html' %}
 
+{% from 'trip_card_macro.html' import trip_card_macro %}
+
 {% block content %}
-    Здесь будет расписание
+    <div class="container bg-light p-3 mb-3">
+        <h4>Найти маршрут</h4>
+        <div>
+            <form class="d-flex flex-wrap" action="POST">
+                <div class="form-floating flex-grow-1 me-3 mb-md-0 mb-3">
+                    <input type="text" class="form-control" id="depart_city" name="depart_city" placeholder="" required>
+                    <label for="depart_city">Город отправления</label>
+                </div>
+                <div class="form-floating flex-grow-1 me-3 mb-md-0 mb-3">
+                    <input type="text" class="form-control" id="arrive_city" name="arrive_city" placeholder="" required>
+                    <label for="depart_city">Город прибытия</label>
+                </div>
+                <div class="form-floating flex-grow-1 me-3 mb-md-0 mb-3">
+                    <input type="date" class="form-control" id="depart_date" name="depart_date" required>
+                    <label for="depart_city">Дата отправления</label>
+                </div>
+                <div>
+                    <button class="btn btn-primary p-3 mb-md-0 mb-3">Найти</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    {{ trip_card_macro(123, 'Москва', 'Санкт-Петербург', '08:00', '12:00', '04:00', 5500, 'buying') }}    
 {% endblock %}
