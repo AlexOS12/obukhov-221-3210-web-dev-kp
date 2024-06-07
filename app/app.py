@@ -10,8 +10,10 @@ app.config.from_pyfile("config.py")
 db_connector = DBConnector(app)
 
 TRIP_SEARCH_FIELDS = [
-    "depart_city",
-    "arrive_city"
+    "depart_city", "arrive_city",
+    "depart_time_from", "depart_time_to",
+    "arrive_time_from", "arrive_time_to",
+    "travel_time_from", "travel_time_to"
 ]
 
 #ВАЖНО!!! У КАЖДОГО ПОЛЯ ДОЛЖНО БЫТЬ УНИКАЛЬНОЕ ИМЯ!!!
@@ -26,8 +28,8 @@ TRIP_SEARCH_QUERY = (
     "JOIN stations as arrive_station on arrive_station.id = routes.arrive_station_id "
     "JOIN cities as arrive_city on arrive_station.city_id = arrive_city.id "
     "WHERE depart_city.name = %(depart_city)s and arrive_city.name = %(arrive_city)s "
-    #"and trips.depart_time > '12:00:00' and trips.depart_time < '14:00:00' "
-    #"and trips.arrive_time > '16:00:00' and trips.arrive_time < '18:00:00' "
+    "and trips.depart_time > %(depart_time_from)s and trips.depart_time < %(depart_time_to)s "
+    # "and trips.arrive_time > '16:00:00' and trips.arrive_time < '18:00:00' "
 )
 
 from authorization import bp as authorization_bp, init_login_manager
@@ -42,12 +44,33 @@ def index():
 def about():
     return render_template("about.html")
 
+def get_trip_params(form):
+    trip_params = {}
+
+    for param in TRIP_SEARCH_FIELDS:
+            trip_params[param] = request.form.get(param) or None
+
+    if not trip_params["depart_time_from"]:
+        trip_params["depart_time_from"] = "00:00"
+    if not trip_params["depart_time_to"]:
+        trip_params["depart_time_to"] = "23:59"
+    if not trip_params["arrive_time_from"]:
+        trip_params["arrive_time_from"] = "00:00"
+    if not trip_params["arrive_time_to"]:
+        trip_params["arrive_time_to"] = "23:59"
+    if not trip_params["travel_time_from"]:
+        trip_params["travel_time_from"] = "00:00"
+    if not trip_params["travel_time_to"]:
+        trip_params["travel_time_to"] = "23:59"
+
+    return trip_params
+
+
 @app.route('/schedule', methods=["GET", "POST"])
 def schedule():
+    trips = {}
     if request.method == "POST":
-        trip_params = {}
-        for param in TRIP_SEARCH_FIELDS:
-            trip_params[param] = request.form.get(param) or None
+        trip_params = get_trip_params(request.form)
 
         print(trip_params)
 
@@ -55,9 +78,10 @@ def schedule():
             cursor.execute(TRIP_SEARCH_QUERY, trip_params)
             trips = cursor.fetchall()
 
-        return render_template("schedule.html", form=request.form, trips=trips)
+        print(cursor.statement)
 
-    return render_template("schedule.html")
+    return render_template("schedule.html", form=request.form, trips=trips, post=request.method=="POST")
+
 
 @app.route('/tickets')
 @login_required

@@ -42,11 +42,11 @@
                     <p class="mb-2">Время отправления</p>
                     <div class="d-flex justify-content-between">
                         <div class="form-floating mb-3 flex-grow-1 me-3">
-                            <input class="form-control" type="time" name="depart_time_from" id="depart_time_from">
+                            <input class="form-control" type="time" name="depart_time_from" id="depart_time_from" value="{{ form.depart_time_from or '' }}">
                             <label for="depart_time_from">От</label>
                         </div>
                         <div class="form-floating mb-3 flex-grow-1">
-                            <input class="form-control" type="time" name="depart_time_to" id="depart_time_to">
+                            <input class="form-control" type="time" name="depart_time_to" id="depart_time_to" value="{{ form.depart_time_to or '' }}">
                             <label for="depart_time_to">До</label>
                         </div>
                     </div>
@@ -56,11 +56,11 @@
                     <p class="mb-2">Время прибытия</p>
                     <div class="d-flex justify-content-between">
                         <div class="form-floating mb-3 flex-grow-1 me-3">
-                            <input class="form-control" type="time" name="arrive_time_from" id="arrive_time_from">
+                            <input class="form-control" type="time" name="arrive_time_from" id="arrive_time_from" value="{{ form.arrive_time_from or '' }}">
                             <label for="arrive_time_from">От</label>
                         </div>
                         <div class="form-floating mb-3 flex-grow-1">
-                            <input class="form-control" type="time" name="arrive_time_to" id="arrive_time_to">
+                            <input class="form-control" type="time" name="arrive_time_to" id="arrive_time_to" value="{{ form.arrive_time_to or '' }}">
                             <label for="arrive_time_to">До</label>
                         </div>
                     </div>
@@ -71,11 +71,11 @@
                     <p class="mb-2">Время в пути</p>
                     <div class="d-flex justify-content-between">
                         <div class="form-floating mb-3 flex-grow-1 me-3">
-                            <input class="form-control" type="time" name="travel_time_from" id="travel_time_from">
+                            <input class="form-control" type="time" name="travel_time_from" id="travel_time_from" value="{{ form.travel_time_from or '' }}">
                             <label for="travel_time_from">От</label>
                         </div>
                         <div class="form-floating mb-3 flex-grow-1">
-                            <input class="form-control" type="time" name="travel_time_to" id="travel_time_to">
+                            <input class="form-control" type="time" name="travel_time_to" id="travel_time_to" value="{{ form.travel_time_to or '' }}">
                             <label for="travel_time_to">До</label>
                         </div>
                     </div>
@@ -97,6 +97,8 @@
     {{ trip_card_macro(trip.trip_no, trip.dep_city, trip.arr_city, trip.dep_time, trip.arr_time, trip.arr_time -
     trip.dep_time, trip.price, 'buying') }}
     {% endfor %}
+    {% elif post %}
+    <p>Подходящих рейсов не найдено</p>
     {% endif %}
 </div>
 
