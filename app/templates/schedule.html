@@ -95,7 +95,7 @@
     {% if trips %}
     {% for trip in trips %}
     {{ trip_card_macro(trip.trip_no, trip.dep_city, trip.arr_city, trip.dep_time, trip.arr_time, trip.arr_time -
-    trip.dep_time, trip.price, 'buying') }}
+    trip.dep_time, trip.price, 'preview') }}
     {% endfor %}
     {% elif post %}
     <p>Подходящих рейсов не найдено</p>
