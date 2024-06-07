@@ -19,7 +19,7 @@ status='preview') %}
     <div class="d-flex justify-content-between">
         <p>Стоимость: {{ price }}&#8381;</p>
         {% if status == 'preview' %}
-        <a class="btn btn-primary" href="#">Купить билет</a>
+        <a class="btn btn-primary" href="{{ url_for('tickets.buy_ticket', trip_no=trip_no ) }}">Купить билет</a>
         {% elif status == 'account_view' %}
         <div>
             <a class="btn btn-outline-primary" href="#">Скачать билет</a>
@@ -27,5 +27,14 @@ status='preview') %}
         </div>
         {% endif %}
     </div>
+    {% if status == 'buy' %}
+    <div class="d-flex justify-content-between">
+        <div>
+            <label for="amount">Количество мест:</label>
+            <input type="number" name="amount" id="amount" value="1" min="1" max="200">
+        </div>
+        <a class="btn btn-primary" href="#">Купить билет</a>
+    </div>
+    {% endif %}
 </div>
 {% endmacro %}
