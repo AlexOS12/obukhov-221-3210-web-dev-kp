@@ -29,7 +29,9 @@ TRIP_SEARCH_QUERY = (
     "JOIN cities as arrive_city on arrive_station.city_id = arrive_city.id "
     "WHERE depart_city.name = %(depart_city)s and arrive_city.name = %(arrive_city)s "
     "and trips.depart_time > %(depart_time_from)s and trips.depart_time < %(depart_time_to)s "
-    # "and trips.arrive_time > '16:00:00' and trips.arrive_time < '18:00:00' "
+    "and trips.arrive_time > %(arrive_time_from)s and trips.arrive_time < %(arrive_time_to)s "
+    "and TIMEDIFF(trips.arrive_time, trips.depart_time) > %(travel_time_from)s "
+    "and TIMEDIFF(trips.arrive_time, trips.depart_time) < %(travel_time_to)s "
 )
 
 from authorization import bp as authorization_bp, init_login_manager
@@ -59,9 +61,9 @@ def get_trip_params(form):
     if not trip_params["arrive_time_to"]:
         trip_params["arrive_time_to"] = "23:59"
     if not trip_params["travel_time_from"]:
-        trip_params["travel_time_from"] = "00:00"
+        trip_params["travel_time_from"] = "00:00:00"
     if not trip_params["travel_time_to"]:
-        trip_params["travel_time_to"] = "23:59"
+        trip_params["travel_time_to"] = "23:59:59"
 
     return trip_params
 
