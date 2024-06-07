@@ -3,28 +3,96 @@
 {% from 'trip_card_macro.html' import trip_card_macro %}
 
 {% block content %}
-    <div class="container bg-light p-3 mb-3">
-        <h4>Найти маршрут</h4>
-        <div>
-            <form class="d-flex flex-wrap" action="POST">
-                <div class="form-floating flex-grow-1 me-3 mb-md-0 mb-3">
-                    <input type="text" class="form-control" id="depart_city" name="depart_city" placeholder="" required>
-                    <label for="depart_city">Город отправления</label>
-                </div>
-                <div class="form-floating flex-grow-1 me-3 mb-md-0 mb-3">
-                    <input type="text" class="form-control" id="arrive_city" name="arrive_city" placeholder="" required>
-                    <label for="depart_city">Город прибытия</label>
-                </div>
-                <div class="form-floating flex-grow-1 me-3 mb-md-0 mb-3">
-                    <input type="date" class="form-control" id="depart_date" name="depart_date" required>
-                    <label for="depart_city">Дата отправления</label>
-                </div>
-                <div>
-                    <button class="btn btn-primary p-3 mb-md-0 mb-3">Найти</button>
-                </div>
-            </form>
+<div class="container bg-light p-3 mb-3">
+    <h4>Найти маршрут</h4>
+    <form action="POST">
+        <div class="d-flex flex-wrap mb-2">
+            <div class="form-floating flex-grow-1 me-3 mb-md-0 mb-3">
+                <input type="text" class="form-control" id="depart_city" name="depart_city" placeholder="" required>
+                <label for="depart_city">Город отправления</label>
+            </div>
+            <div class="form-floating flex-grow-1 me-3 mb-md-0 mb-3">
+                <input type="text" class="form-control" id="arrive_city" name="arrive_city" placeholder="" required>
+                <label for="depart_city">Город прибытия</label>
+            </div>
+            <div class="form-floating flex-grow-1 me-3 mb-md-0 mb-3">
+                <input type="date" class="form-control" id="depart_date" name="depart_date" required>
+                <label for="depart_city">Дата отправления</label>
+            </div>
+            <div>
+                <button class="btn btn-primary p-3 mb-md-0 mb-3">Найти</button>
+            </div>
         </div>
-    </div>
+        <div class="row">
+            <div class="col-10"></div>
+            <p class="col-2 text-end" id="showAdditionalFilters">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-filter"
+                    viewBox="0 0 16 16">
+                    <path
+                        d="M6 10.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5zm-2-3a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5zm-2-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5z" />
+                </svg>
+                Фильтры
+            </p>
+        </div>
+        <!-- Дополнительные фильтры -->
+        <div class="hidden" id="additionalFilters">
+            <h5 class="mb-3">Фильтры</h5>
+            <div class="row">
+                <div class="col-4">
+                    <p class="mb-2">Время отправления</p>
+                    <div class="d-flex justify-content-between">
+                        <div class="form-floating mb-3 flex-grow-1 me-3">
+                            <input class="form-control" type="time" name="depart_time_from" id="depart_time_from">
+                            <label for="depart_time_from">От</label>
+                        </div>
+                        <div class="form-floating mb-3 flex-grow-1">
+                            <input class="form-control" type="time" name="depart_time_to" id="depart_time_to">
+                            <label for="depart_time_to">До</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-4"></div>
+                <div class="col-4">
+                    <p class="mb-2">Время прибытия</p>
+                    <div class="d-flex justify-content-between">
+                        <div class="form-floating mb-3 flex-grow-1 me-3">
+                            <input class="form-control" type="time" name="arrive_time_from" id="arrive_time_from">
+                            <label for="arrive_time_from">От</label>
+                        </div>
+                        <div class="form-floating mb-3 flex-grow-1">
+                            <input class="form-control" type="time" name="arrive_time_to" id="arrive_time_to">
+                            <label for="arrive_time_to">До</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-4">
+                    <p class="mb-2">Время в пути</p>
+                    <div class="d-flex justify-content-between">
+                        <div class="form-floating mb-3 flex-grow-1 me-3">
+                            <input class="form-control" type="time" name="travel_time_from" id="travel_time_from">
+                            <label for="travel_time_from">От</label>
+                        </div>
+                        <div class="form-floating mb-3 flex-grow-1">
+                            <input class="form-control" type="time" name="travel_time_to" id="travel_time_to">
+                            <label for="travel_time_to">До</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-4"></div>
+                <div class="col-4">
+                    <!-- p нужен для выравнивания -->
+                    <p class="mb-2"> </p>
+                    <button class="ms-6 btn btn-primary p-3 mb-md-0 mb-3">Применить</button>
+                </div>
+            </div>
+        </div>
+    </form>
 
-    {{ trip_card_macro(123, 'Москва', 'Санкт-Петербург', '08:00', '12:00', '04:00', 5500, 'buying') }}    
+</div>
+
+<script src="{{ url_for('static', filename='scripts/show_additional_filters.js') }}"></script>
+
+{{ trip_card_macro(123, 'Москва', 'Санкт-Петербург', '08:00', '12:00', '04:00', 5500, 'buying') }}
 {% endblock %}

@@ -10,3 +10,11 @@ body {
     width: 300px;
     height: 3px;
 }
+
+.hidden {
+    display: none;
+}
+
+#showAdditionalFilters {
+    cursor: pointer;
+}
