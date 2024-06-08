@@ -1,6 +1,8 @@
-from flask import render_template, redirect, render_template, Blueprint, current_app, request, url_for
+from flask import render_template, redirect, render_template, Blueprint, current_app, request, url_for, flash
 from flask_login import LoginManager, UserMixin, login_user, logout_user, current_user, login_required
 from app import db_connector
+from functools import wraps
+from users_policies import UsersPolicy
 
 bp = Blueprint('auth', __name__, url_prefix='/auth')
 
@@ -13,6 +15,32 @@ class User(UserMixin):
     def is_admin(self):
         return self.role_id == current_app.config['ADMIN_ROLE_ID']
     
+    def can(self, action, user=None):
+        user_policy = UsersPolicy(user)
+        method = getattr(user_policy, action, lambda: False)
+        return method()
+
+
+def can_user(action):
+    def decorator(func):
+        # Декоратор является декоратором
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            user = None
+            user_id = kwargs.get('user_id')
+            if user_id:
+                with db_connector.connect().cursor(named_tuple=True) as cursor:
+                    cursor.execute("SELECT * FROM users WHERE id=%s", (user_id,))
+                    user = cursor.fetchone()
+
+            if not current_user.can(action, user):
+                flash("У вас недостаточно прав для доступа к этой странице", "warning")
+                return redirect(url_for("index"))
+            
+            return func(*args, **kwargs)
+        return wrapper
+    return decorator
+
 def init_login_manager(app):
     login_manager = LoginManager()
     login_manager.init_app(app)

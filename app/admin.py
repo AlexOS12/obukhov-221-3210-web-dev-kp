@@ -2,6 +2,7 @@ from flask import render_template, redirect, render_template, Blueprint, current
 from flask_login import login_required, current_user
 from mysql.connector.errors import DatabaseError
 from app import db_connector
+from authorization import can_user
 
 bp = Blueprint('admin', __name__, url_prefix='/admin')
 
@@ -146,12 +147,14 @@ def get_form_fields(form, required_fields):
 
 @bp.route('/')
 @login_required
+@can_user('see_admin_panel')
 def index():
     return redirect(url_for('admin.users'))
 
 
 @bp.route('/user/<int:user_id>/edit', methods=["GET", "POST"])
 @login_required
+@can_user('edit_users')
 def edit_user(user_id):
     with db_connector.connect().cursor(named_tuple=True) as cursor:
         cursor.execute(USER_INFO_QUERY, (user_id, ))
@@ -179,6 +182,7 @@ def edit_user(user_id):
 
 
 @bp.route('/user/<int:user_id>/view')
+@can_user('view_users')
 def view_user(user_id):
     with db_connector.connect().cursor(named_tuple=True) as cursor:
         cursor.execute(USER_INFO_QUERY, (user_id, ))
@@ -190,6 +194,7 @@ def view_user(user_id):
 
 
 @bp.route('/user/<int:user_id>/delete', methods=["POST"])
+@can_user('delete_users')
 def delete_user(user_id):
     try:
         with db_connector.connect().cursor() as cursor:
@@ -203,6 +208,7 @@ def delete_user(user_id):
 
 
 @bp.route('/create_user', methods=["GET", "POST"])
+@can_user('create_users')
 def create_user():
     roles = get_roles()
     if request.method == "GET":
@@ -224,6 +230,7 @@ def create_user():
 
 @bp.route('/users')
 @login_required
+@can_user('see_admin_panel')
 def users():
     with db_connector.connect().cursor(named_tuple=True) as cursor:
         cursor.execute(USER_SEARCH_QUERY)
@@ -240,6 +247,7 @@ def get_stations_and_cities():
 
 @bp.route('/routes')
 @login_required
+@can_user('see_admin_panel')
 def routes():
     with db_connector.connect().cursor(named_tuple=True) as cursor:
         cursor.execute(GET_ROUTES_QUERY)
@@ -249,6 +257,7 @@ def routes():
 
 
 @bp.route('/route/<int:route_id>/view')
+@can_user('view_routes')
 def view_route(route_id):
     with db_connector.connect().cursor(named_tuple=True) as cursor:
         cursor.execute(GET_ROUTE_INFO_QUERY, (route_id, ))
@@ -259,6 +268,7 @@ def view_route(route_id):
 
 
 @bp.route('/route/<int:route_id>/edit', methods=["GET", "POST"])
+@can_user('edit_routes')
 def edit_route(route_id):
     with db_connector.connect().cursor(named_tuple=True) as cursor:
         cursor.execute(GET_ROUTE_INFO_QUERY, (route_id, ))
@@ -284,6 +294,7 @@ def edit_route(route_id):
 
 
 @bp.route('/route/<int:route_id>/delete', methods=["POST"])
+@can_user('delete_routes')
 def delete_route(route_id):
     try:
         with db_connector.connect().cursor() as cursor:
@@ -298,6 +309,7 @@ def delete_route(route_id):
 
 
 @bp.route('route/create', methods=["GET", "POST"])
+@can_user('create_routes')
 def create_route():
     stations_and_cities = get_stations_and_cities()
 
@@ -320,6 +332,7 @@ def create_route():
 
 @bp.route('/trips')
 @login_required
+@can_user('see_admin_panel')
 def trips():
     with db_connector.connect().cursor(named_tuple=True) as cursor:
         cursor.execute(GET_TRIPS_QUERY)
@@ -327,6 +340,7 @@ def trips():
     return render_template("admin_trips.html", trips=trips)
 
 @bp.route('/trip/<int:trip_id>/view')
+@can_user('view_trips')
 def view_trip(trip_id):
     with db_connector.connect().cursor(named_tuple=True) as cursor:
         cursor.execute(GET_TRIP_INFO, (trip_id, ))
@@ -337,6 +351,7 @@ def view_trip(trip_id):
     return render_template("view_trip.html", trip=trip, routes=routes)
 
 @bp.route('/trip/<int:trip_id>/edit', methods=["GET", "POST"])
+@can_user('edit_trips')
 def edit_trip(trip_id):
     with db_connector.connect().cursor(named_tuple=True) as cursor:
         cursor.execute(GET_TRIP_INFO, (trip_id, ))
@@ -363,6 +378,7 @@ def edit_trip(trip_id):
     return render_template("edit_trip.html", trip=trip, routes=routes)
 
 @bp.route('/trip/<int:trip_id>/delete', methods=["POST"])
+@can_user('delete_trips')
 def delete_trip(trip_id):
     try:
         with db_connector.connect().cursor() as cursor:
@@ -377,6 +393,7 @@ def delete_trip(trip_id):
     return redirect(url_for("admin.trips"))
 
 @bp.route('trips/create', methods=["GET", "POST"])
+@can_user('create_trips')
 def create_trip():
     with db_connector.connect().cursor(named_tuple=True) as cursor:
         cursor.execute(GET_ROUTES_QUERY)

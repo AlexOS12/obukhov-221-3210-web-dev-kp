@@ -46,9 +46,11 @@
                         <li class="nav-item">
                             <a class="nav-link" aria-current="page" href="{{ url_for('account.index') }}">Мои Билеты</a>
                         </li>
+                        {% if current_user.can('see_admin_panel') %}
                         <li class="nav-item">
                             <a class="nav-link" aria-current="page" href="{{ url_for('admin.index') }}">Админ-панель</a>
                         </li>
+                        {% endif %}
                         {% endif %}
                     </ul>
                     <div>
