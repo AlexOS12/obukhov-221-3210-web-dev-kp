@@ -1,0 +1,7 @@
+{% extends 'base.html' %}
+
+{% from 'user_macro.html' import user_macro %}
+
+{% block content %}
+    {{ user_macro(user, roles, action='view') }}
+{% endblock %}

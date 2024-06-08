@@ -5,6 +5,10 @@ body {
     font-family: 'Comfortaa';
 }
 
+a {
+    text-decoration: none;
+}
+
 .line {
     background-color: #0b5ed8;
     width: 300px;

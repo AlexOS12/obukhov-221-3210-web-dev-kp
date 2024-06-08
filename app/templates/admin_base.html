@@ -7,10 +7,6 @@
             href="{{ url_for('admin.users') }}">Пользователи</a>
     </li>
     <li class="nav-item">
-        <a class="nav-link {% if request.endpoint == 'admin.tickets' %} active {% endif %}" aria-current="page"
-            href="{{ url_for('admin.tickets') }}">Билеты</a>
-    </li>
-    <li class="nav-item">
         <a class="nav-link {% if request.endpoint == 'admin.routes' %} active {% endif %}" aria-current="page"
             href="{{ url_for('admin.routes') }}">Маршруты</a>
     </li>
@@ -20,6 +16,8 @@
     </li>
 </ul>
 
+<div class="container">
     {% block tab_content %}
     {% endblock %}
+</div>
 {% endblock %}

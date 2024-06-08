@@ -1,5 +1,59 @@
 {% extends 'admin_base.html' %}
 
 {% block tab_content %}
-    Управление пользователями
+<table class="table">
+    <thead>
+        <th>#</th>
+        <th>Логин</th>
+        <th>ФИО</th>
+        <th>Роль</th>
+        <th>Действия</th>
+    </thead>
+    <tbody>
+        {% for user in users %}
+        <tr>
+            <td>{{ user.id }}</td>
+            <td>{{ user.login }}</td>
+            <td>{{ user.fio }}</td>
+            <td>{{ user.role_name }}</td>
+            <td>
+                <a class="btn btn-primary" href="{{ url_for('admin.view_user', user_id=user.id) }}">
+                    <i class="bi bi-eye-fill"></i>
+                </a>
+                <a class="btn btn-primary" href="{{ url_for('admin.edit_user', user_id=user.id) }}">
+                    <i class="bi bi-pencil"></i>
+                </a>
+                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#delete-modal"
+                    data-delete-url="{{ url_for('admin.delete_user', user_id=user.id) }}">
+                    <i class="bi bi-trash-fill"></i>
+                </button>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<a class="btn btn-primary" href="{{ url_for('admin.create_user') }}">Создать пользователя</a>
+
+<div class="modal" id="delete-modal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Подтвердите удаление пользователя</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Вы уверены, что хотите удалить этого пользователя?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Нет</button>
+                <form action="" method="post">
+                    <button type="submit" class="btn btn-danger">Да</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='scripts/delete_user.js') }}"></script>
 {% endblock %}
