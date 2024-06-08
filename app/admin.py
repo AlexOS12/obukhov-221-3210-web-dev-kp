@@ -46,6 +46,47 @@ GET_ROLES_QUERY = (
     "SELECT id, name FROM roles "
 )
 
+GET_ROUTES_QUERY = (
+    "SELECT routes.id as route_id, depart_city.name as dep_city_name, "
+    "depart_station.name as dep_station_name, arrive_city.name as arr_city_name, "
+    "arrive_station.name as arr_station_name "
+    "FROM routes JOIN stations as depart_station on depart_station.id = routes.depart_station_id "
+    "JOIN stations as arrive_station on arrive_station.id = routes.arrive_station_id "
+    "JOIN cities as depart_city on depart_city.id = depart_station.city_id "
+    "JOIN cities as arrive_city on arrive_city.id = arrive_station.city_id "
+)
+
+GET_STATION_CITIES_INFO = (
+    "SELECT stations.id as station_id, stations.name as station_name, cities.name as city_name "
+    "FROM stations "
+    "JOIN cities on stations.city_id = cities.id "
+    "ORDER BY station_id"
+)
+
+GET_ROUTE_INFO_QUERY = (
+    "SELECT id, depart_station_id, arrive_station_id FROM routes "
+    "WHERE id = %s"
+)
+
+UPDATE_ROUTE_QUERY = (
+    "UPDATE routes "
+    "SET depart_station_id = %(depart_station)s, arrive_station_id = %(arrive_station)s "
+    "WHERE id = %(route_id)s"
+)
+
+UPDATE_ROUTE_FIELDS = (
+    "depart_station", "arrive_station"
+)
+
+CREATE_ROUTE_QUERY = (
+    "INSERT INTO routes (depart_station_id, arrive_station_id) "
+    "VALUES (%(depart_station)s, %(arrive_station)s) "
+)
+
+DELETE_ROUTE_QUERY = (
+    "DELETE FROM routes WHERE id = %s "
+)
+
 
 def get_roles():
     with db_connector.connect().cursor(named_tuple=True) as cursor:
@@ -119,12 +160,13 @@ def delete_user(user_id):
         flash("Произошла ошибка во время удаления пользователя", category="danger")
     return redirect(url_for("admin.users"))
 
+
 @bp.route('/create_user', methods=["GET", "POST"])
 def create_user():
     roles = get_roles()
     if request.method == "GET":
         return render_template("create_user.html", user={}, roles=roles)
-    
+
     form_fields = get_form_fields(request.form, CREATE_USER_FIELDS)
 
     try:
@@ -135,10 +177,9 @@ def create_user():
         return redirect(url_for("admin.users"))
     except DatabaseError as error:
         db_connector.connect().rollback()
-        flash(error, category="danger")
         flash("Во время создания пользователя произошла ошибка", category="danger")
         return render_template("create_user.html", user=form_fields, roles=roles)
-    
+
 
 @bp.route('/users')
 @login_required
@@ -150,16 +191,91 @@ def users():
     return render_template("admin_users.html", users=users)
 
 
-@bp.route('/tickets')
-@login_required
-def tickets():
-    return render_template("admin_tickets.html")
+def get_stations_and_cities():
+    with db_connector.connect().cursor(named_tuple=True) as cursor:
+        cursor.execute(GET_STATION_CITIES_INFO)
+        return cursor.fetchall()
 
 
 @bp.route('/routes')
 @login_required
 def routes():
-    return render_template("admin_routes.html")
+    with db_connector.connect().cursor(named_tuple=True) as cursor:
+        cursor.execute(GET_ROUTES_QUERY)
+        routes = cursor.fetchall()
+
+    return render_template("admin_routes.html", routes=routes)
+
+
+@bp.route('/route/<int:route_id>/view')
+def view_route(route_id):
+    with db_connector.connect().cursor(named_tuple=True) as cursor:
+        cursor.execute(GET_ROUTE_INFO_QUERY, (route_id, ))
+        route = cursor.fetchone()
+    stations_and_cities = get_stations_and_cities()
+
+    return render_template("view_route.html", route=route, stations_and_cities=stations_and_cities)
+
+
+@bp.route('/route/<int:route_id>/edit', methods=["GET", "POST"])
+def edit_route(route_id):
+    with db_connector.connect().cursor(named_tuple=True) as cursor:
+        cursor.execute(GET_ROUTE_INFO_QUERY, (route_id, ))
+        route = cursor.fetchone()
+    stations_and_cities = get_stations_and_cities()
+
+    if request.method == "GET":
+        return render_template("edit_route.html", route=route, stations_and_cities=stations_and_cities)
+
+    fields = get_form_fields(request.form, UPDATE_ROUTE_FIELDS)
+    fields["route_id"] = route_id
+
+    try:
+        with db_connector.connect().cursor() as cursor:
+            cursor.execute(UPDATE_ROUTE_QUERY, fields)
+        db_connector.connect().commit()
+        flash("Маршрут был успешно обновлён", category="success")
+        return redirect(url_for("admin.routes"))
+    except DatabaseError as error:
+        db_connector.connect().rollback()
+        flash("Во время изменения маршрута произошла ошибка", category="danger")
+        return render_template("edit_route.html", route=route, stations_and_cities=stations_and_cities)
+
+
+@bp.route('/route/<int:route_id>/delete', methods=["POST"])
+def delete_route(route_id):
+    try:
+        with db_connector.connect().cursor() as cursor:
+            cursor.execute(DELETE_ROUTE_QUERY, (route_id, ))
+        db_connector.connect().commit()
+        flash("Маршрут был успешно удалён", category="success")
+    except DatabaseError as error:
+        db_connector.connect().rollback()
+        flash("Произошла ошибка во время удаления маршрута", category="danger")
+
+    return redirect(url_for("admin.routes"))
+
+
+@bp.route('route/create', methods=["GET", "POST"])
+def create_route():
+    stations_and_cities = get_stations_and_cities()
+
+    if request.method == "GET":
+        return render_template("create_route.html", stations_and_cities=stations_and_cities)
+
+    fields = get_form_fields(request.form, UPDATE_ROUTE_FIELDS)
+
+    try:
+        with db_connector.connect().cursor() as cursor:
+            cursor.execute(CREATE_ROUTE_QUERY, fields)
+        db_connector.connect().commit()
+        flash("Маршрут был успешно создан", category="success")
+        return redirect(url_for("admin.routes"))
+    except DatabaseError as error:
+        db_connector.connect().rollback()
+        flash(error, category="danger")
+        flash("Во время создания маршрута произошла ошибка", category="danger")
+        return render_template("create_route.html", stations_and_cities=stations_and_cities)
 
 
 @bp.route('/trips')

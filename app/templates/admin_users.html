@@ -1,6 +1,7 @@
 {% extends 'admin_base.html' %}
 
 {% block tab_content %}
+<a class="btn btn-primary mb-3" href="{{ url_for('admin.create_user') }}">Создать пользователя</a>
 <table class="table">
     <thead>
         <th>#</th>
@@ -33,7 +34,6 @@
     </tbody>
 </table>
 
-<a class="btn btn-primary" href="{{ url_for('admin.create_user') }}">Создать пользователя</a>
 
 <div class="modal" id="delete-modal" tabindex="-1">
     <div class="modal-dialog">

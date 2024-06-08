@@ -1,0 +1,8 @@
+{% extends 'base.html' %}
+
+{% from 'route_macro.html' import route_macro %}
+
+{% block content %}
+    <h2>Маршрут №{{route.id}}</h2>
+    {{ route_macro(route, stations_and_cities, action='edit') }}
+{% endblock %}

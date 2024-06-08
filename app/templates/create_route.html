@@ -1,0 +1,7 @@
+{% extends 'base.html' %}
+
+{% from 'route_macro.html' import route_macro %}
+
+{% block content %}
+    {{ route_macro({}, stations_and_cities, action='create') }}
+{% endblock %}

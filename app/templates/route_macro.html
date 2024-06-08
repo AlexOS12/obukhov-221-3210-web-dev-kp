@@ -1,0 +1,33 @@
+{% macro route_macro(route, stations_and_cities, action='view') %}
+
+<form method="post">
+    <div class="mb-3 form-floating">
+        <select class="form-control" name="depart_station" id="depart_station" required {% if action=='view' %} disabled {% endif %}>
+            {% for station_and_city in stations_and_cities %}
+            <option value="{{ station_and_city.station_id }}" {% if route.depart_station_id|string==station_and_city.station_id|string %}selected{% endif %}>
+               {{ station_and_city.station_name }} ({{ station_and_city.city_name }})
+            </option>
+            {% endfor %}
+        </select>
+        <label class="form-label" for="depart_station">Станция отправления</label>
+    </div>
+    <div class="mb-3 form-floating">
+        <select class="form-control" name="arrive_station" id="arrive_station" required {% if action=='view' %} disabled {% endif %}>
+            {% for station_and_city in stations_and_cities %}
+            <option value="{{ station_and_city.station_id }}" {% if route.arrive_station_id|string==station_and_city.station_id|string %}selected{% endif %}>
+               {{ station_and_city.station_name }} ({{ station_and_city.city_name }})
+            </option>
+            {% endfor %}
+        </select>
+        <label class="form-label" for="arrive_station">Станция прибытия</label>
+    </div>
+    {% if action == 'create' %}
+    <button class="btn btn-primary">Создать</button>
+    {% elif action == 'edit' %}
+    <button class="btn btn-primary">Сохранить</button>
+    {% else %}
+    <a class="btn btn-primary" href="{{ url_for('admin.routes') }}">Назад</a>
+    {% endif %}
+</form>
+
+{% endmacro %}
