@@ -43,6 +43,9 @@ app.register_blueprint(account_bp)
 from tickets import bp as tickets_bp
 app.register_blueprint(tickets_bp)
 
+from admin import bp as admin_bp
+app.register_blueprint(admin_bp)
+
 init_login_manager(app)
 
 @app.route('/')
