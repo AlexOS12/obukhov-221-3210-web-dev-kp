@@ -87,6 +87,47 @@ DELETE_ROUTE_QUERY = (
     "DELETE FROM routes WHERE id = %s "
 )
 
+GET_TRIPS_QUERY = (
+    "SELECT trips.id as trip_id, trips.route_id as route_id, "
+    "depart_city.name as dep_city_name, arrive_city.name as arr_city_name, "
+    "depart_station.id as dep_station_id, depart_station.name as dep_station_name, "
+    "arrive_station.id as arr_station_id, arrive_station.name as arr_station_name, "
+    "trips.depart_time as dep_time, trips.arrive_time as arr_time, "
+    "trips.price_per_person as price_per_person, trips.available_places "
+    "FROM trips join routes on trips.route_id = routes.id "
+    "JOIN stations as depart_station on depart_station.id = routes.depart_station_id "
+    "JOIN stations as arrive_station on arrive_station.id = routes.arrive_station_id "
+    "JOIN cities as depart_city on depart_city.id = depart_station.city_id "
+    "JOIN cities as arrive_city on arrive_city.id = arrive_station.city_id "
+)
+
+GET_TRIP_INFO = (
+    "SELECT id, route_id, TIME_FORMAT(depart_time, '%H:%i') as dep_time, "
+    "TIME_FORMAT(arrive_time, '%H:%i') as arr_time, price_per_person, available_places "
+    "FROM trips "
+    "WHERE id = %s "
+)
+
+UPDATE_TRIP_QUERY = (
+    "UPDATE trips set route_id = %(route_id)s, depart_time = %(dep_time)s, "
+    "arrive_time = %(arr_time)s, available_places = %(available_places)s, "
+    "price_per_person = %(price_per_person)s "
+    "WHERE id = %(trip_id)s"
+)
+
+UPDATE_TRIP_FIELDS = (
+    "route_id", "dep_time", "arr_time", "available_places", "price_per_person"
+)
+
+DELETE_TRIP_QUERY = (
+    "DELETE FROM trips WHERE id = %s "
+)
+
+CREATE_TRIP_QUERY = (
+    "INSERT INTO trips "
+    "(route_id, arrive_time, depart_time, available_places, price_per_person) "
+    "VALUES (%(route_id)s, %(arr_time)s, %(dep_time)s, %(available_places)s, %(price_per_person)s) "
+)
 
 def get_roles():
     with db_connector.connect().cursor(named_tuple=True) as cursor:
@@ -273,7 +314,6 @@ def create_route():
         return redirect(url_for("admin.routes"))
     except DatabaseError as error:
         db_connector.connect().rollback()
-        flash(error, category="danger")
         flash("Во время создания маршрута произошла ошибка", category="danger")
         return render_template("create_route.html", stations_and_cities=stations_and_cities)
 
@@ -281,4 +321,80 @@ def create_route():
 @bp.route('/trips')
 @login_required
 def trips():
-    return render_template("admin_trips.html")
+    with db_connector.connect().cursor(named_tuple=True) as cursor:
+        cursor.execute(GET_TRIPS_QUERY)
+        trips = cursor.fetchall()
+    return render_template("admin_trips.html", trips=trips)
+
+@bp.route('/trip/<int:trip_id>/view')
+def view_trip(trip_id):
+    with db_connector.connect().cursor(named_tuple=True) as cursor:
+        cursor.execute(GET_TRIP_INFO, (trip_id, ))
+        trip = cursor.fetchone()
+        cursor.execute(GET_ROUTES_QUERY)
+        routes = cursor.fetchall()
+
+    return render_template("view_trip.html", trip=trip, routes=routes)
+
+@bp.route('/trip/<int:trip_id>/edit', methods=["GET", "POST"])
+def edit_trip(trip_id):
+    with db_connector.connect().cursor(named_tuple=True) as cursor:
+        cursor.execute(GET_TRIP_INFO, (trip_id, ))
+        trip = cursor.fetchone()
+        cursor.execute(GET_ROUTES_QUERY)
+        routes = cursor.fetchall()
+
+    if request.method == "GET":
+        return render_template("edit_trip.html", trip=trip, routes=routes)
+    
+    fields = get_form_fields(request.form, UPDATE_TRIP_FIELDS)
+    fields["trip_id"] = trip_id
+
+    try:
+        with db_connector.connect().cursor() as cursor:
+            cursor.execute(UPDATE_TRIP_QUERY, fields)
+        db_connector.connect().commit()
+        flash("Рейс был успешно обновлён", category="success")
+        return redirect(url_for("admin.trips"))
+    except DatabaseError as error:
+        db_connector.connect().rollback()
+        flash(error, category="danger")
+        flash("Произошла ошибка во время изменения рейса", category="danger")
+    return render_template("edit_trip.html", trip=trip, routes=routes)
+
+@bp.route('/trip/<int:trip_id>/delete', methods=["POST"])
+def delete_trip(trip_id):
+    try:
+        with db_connector.connect().cursor() as cursor:
+            cursor.execute(DELETE_TRIP_QUERY, (trip_id, ))
+        print(request.url)  
+        db_connector.connect().commit()
+        flash("Маршрут был успешно удалён", category="success")
+    except DatabaseError as error:
+        db_connector.connect().rollback()
+        flash(error, category="danger")
+        flash("Во время удаления рейса произошла ошибка", category="danger")
+    return redirect(url_for("admin.trips"))
+
+@bp.route('trips/create', methods=["GET", "POST"])
+def create_trip():
+    with db_connector.connect().cursor(named_tuple=True) as cursor:
+        cursor.execute(GET_ROUTES_QUERY)
+        routes = cursor.fetchall()
+
+    if request.method == "GET":
+        return render_template("edit_trip.html", trip={}, routes=routes)
+    
+    fields = get_form_fields(request.form, UPDATE_TRIP_FIELDS)
+
+    try:
+        with db_connector.connect().cursor() as cursor:
+            cursor.execute(CREATE_TRIP_QUERY, fields)
+        db_connector.connect().commit()
+        flash("Рейс был успешно создан", category="success")
+        return redirect(url_for("admin.trips"))
+    except DatabaseError as error:
+        db_connector.connect().rollback()
+        flash(error, category="danger")
+        flash("Произошла ошибка во время создания рейса", category="danger")
+    return render_template("create_trip.html", trip=fields, routes=routes)

@@ -1,0 +1,39 @@
+{% macro trip_macro(trip, routes, action='view') %}
+
+<form method="post">
+    <div class="mb-3 form-floating">
+        <select class="form-control" name="route_id" id="route_id" required {% if action=='view' %} disabled {% endif %}>
+            {% for route in routes %}
+            <option value="{{ route.route_id }}" {% if route.route_id|string==trip.route_id|string %}selected{% endif %}>
+               [{{ route.route_id }}] {{route.dep_city_name}} ({{ route.dep_station_name }}) -> {{ route.arr_city_name }} ({{ route.arr_station_name }})
+            </option>
+            {% endfor %}
+        </select>
+        <label class="form-label" for="route_id">Маршрут</label>
+    </div>
+    <div class="mb-3 form-floating">
+        <input class="form-control" value="{{ trip.dep_time }}" type="time" id="dep_time" name="dep_time" required {% if action=='view' %} disabled {% endif %}>
+        <label class="form-label" for="dep_time">Время отправления</label>
+    </div>
+    <div class="mb-3 form-floating">
+        <input class="form-control" value="{{ trip.arr_time }}" type="time" id="arr_time" name="arr_time" required {% if action=='view' %} disabled {% endif %}>
+        <label class="form-label" for="arr_time">Время прибытия</label>
+    </div>
+    <div class="mb-3 form-floating">
+        <input class="form-control" value="{{ trip.price_per_person }}" type="number" id="price_per_person" name="price_per_person" required {% if action=='view' %} disabled {% endif %}>
+        <label class="form-label" for="price_per_person">Стоимость места</label>
+    </div>
+    <div class="mb-3 form-floating">
+        <input class="form-control" value="{{ trip.available_places }}" type="number" id="available_places" name="available_places" required {% if action=='view' %} disabled {% endif %}>
+        <label class="form-label" for="available_places">Количество мест</label>
+    </div>
+    {% if action == 'create' %}
+    <button class="btn btn-primary">Создать</button>
+    {% elif action == 'edit' %}
+    <button class="btn btn-primary">Сохранить</button>
+    {% else %}
+    <a class="btn btn-primary" href="{{ url_for('admin.routes') }}">Назад</a>
+    {% endif %}
+</form>
+
+{% endmacro %}

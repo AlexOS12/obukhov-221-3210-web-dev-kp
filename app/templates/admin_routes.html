@@ -3,7 +3,7 @@
 {% block tab_content %}
 <a class="btn btn-primary mb-3" href="{{ url_for('admin.create_route') }}">Создать маршрут</a>
 <table class="table">
-    <thead>
+    <thead class="text-center">
         <th>№</th>
         <th>Город отправления</th>
         <th>Станция отправления</th>
@@ -11,9 +11,9 @@
         <th>Станция прибытия</th>
         <th>Действия</th>
     </thead>
-    <tbody>
+    <tbody class="text-center">
         {% for route in routes %}
-        <tr>
+        <tr class="align-middle">
             <td>{{ route.route_id }}</td>
             <td>{{ route.dep_city_name }}</td>
             <td>{{ route.dep_station_name }}</td>

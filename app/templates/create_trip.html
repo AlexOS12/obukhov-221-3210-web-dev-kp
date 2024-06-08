@@ -1,0 +1,7 @@
+{% extends 'base.html' %}
+
+{% from 'trip_macro.html' import trip_macro %}
+
+{% block content %}
+    {{ trip_macro(trip, routes, action='create') }}
+{% endblock %}
