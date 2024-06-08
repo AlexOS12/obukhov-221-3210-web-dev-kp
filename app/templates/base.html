@@ -44,7 +44,10 @@
                         </li>
                         {% if current_user.is_authenticated %}
                         <li class="nav-item">
-                            <a class="nav-link {% if request.endpoint == 'account.index' %} active {% endif %}" aria-current="page" href="{{ url_for('account.index') }}">Мои Билеты</a>
+                            <a class="nav-link {% if request.endpoint == 'account.tickets' %} active {% endif %}" aria-current="page" href="{{ url_for('account.tickets') }}">Мои Билеты</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'account.index' %} active {% endif %}" aria-current="page" href="{{ url_for('account.index') }}">Личный кабинет</a>
                         </li>
                         {% if current_user.can('see_admin_panel') %}
                         <li class="nav-item">

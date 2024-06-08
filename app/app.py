@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request
-from flask_login import login_required, current_user
+from flask_login import login_required
 from mysqldb import DBConnector
 from mysql.connector.errors import DatabaseError
 

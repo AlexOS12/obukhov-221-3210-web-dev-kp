@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% from 'trip_card_macro.html' import trip_card_macro %}
+
+{% block content %}
+<h4>Мои билеты</h4>
+
+<div class="d-flex justify-content-center mb-3">
+    <button class="btn btn-outline-secondary mx-auto">Показать старые билеты</button>
+</div>
+
+{% for ticket in tickets %}
+    {{ trip_card_macro(ticket.trip_no, ticket.dep_city, ticket.arr_city, ticket.dep_time, ticket.arr_time,
+        ticket.arr_time - ticket.dep_time, ticket.price, 'account_view', ticket.ticket_no) }}
+{% endfor %}
+
+{% endblock %}

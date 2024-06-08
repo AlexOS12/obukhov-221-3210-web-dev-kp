@@ -8,8 +8,14 @@ class UsersPolicy:
     def see_admin_panel(self):
         return current_user.is_admin()
 
+    def assing_roles(self):
+        return current_user.is_admin()
+
     def view_users(self):
         return current_user.is_admin()
+
+    def edit_self(self):
+        return True
 
     def edit_users(self):
         return current_user.is_admin()

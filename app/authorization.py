@@ -57,6 +57,7 @@ def load_user(user_id):
         user = cursor.fetchone()
 
     if user:
+       print(user.role_id)
        return User(user_id, user.login, user.role_id)
     return None
     

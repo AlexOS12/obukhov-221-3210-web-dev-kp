@@ -1,6 +1,9 @@
-from flask import render_template, redirect, render_template, Blueprint, current_app, request, url_for
+from flask import render_template, redirect, render_template, Blueprint, current_app, request, url_for, flash
 from flask_login import login_required, current_user
 from app import db_connector
+from mysql.connector.errors import DatabaseError
+from authorization import can_user
+from admin import USER_INFO_QUERY, UPDATE_USER_INFO_QUERY, GET_ROLES_QUERY, get_roles, get_form_fields, UPDATE_USER_FIELDS
 
 bp = Blueprint('account', __name__, url_prefix='/account')
 
@@ -18,13 +21,52 @@ TICKET_SEARCH_QUERY = (
     "WHERE tickets.owner_id = %s "
 )
 
+@bp.route('/edit_self', methods=["POST"])
+@login_required
+@can_user('edit_self')
+def edit_self():
+    with db_connector.connect().cursor(named_tuple=True) as cursor:
+        cursor.execute(USER_INFO_QUERY, (current_user.id, ))
+        user = cursor.fetchone()
+
+    roles = {}
+    if current_user.can('assign_roles'):
+        roles = get_roles()
+    form_fields = get_form_fields(request.form, UPDATE_USER_FIELDS)
+    form_fields["role"] = current_user.role_id
+    form_fields["user_id"] = current_user.id
+
+    print(form_fields)
+
+    try:
+        with db_connector.connect().cursor() as cursor:
+            cursor.execute(UPDATE_USER_INFO_QUERY, form_fields)
+            db_connector.connect().commit()
+            flash("Данные пользователя были успешно обновлены", category="success")
+            return redirect(url_for('account.index'))
+    except DatabaseError as error:
+        db_connector.connect().rollback()
+        flash(error, category="danger")
+        flash("Произошла ошибка изменения данных пользователя", category="danger")
+        return render_template("account.html", user=user, roles=roles)
+
 @bp.route('/')
 @login_required
 def index():
+    with db_connector.connect().cursor(named_tuple=True) as cursor:
+        cursor.execute(USER_INFO_QUERY, (current_user.id, ))
+        user = cursor.fetchone()
+        cursor.execute(GET_ROLES_QUERY)
+        roles = cursor.fetchall()
+    return render_template("account.html", user=user, roles=roles)
+
+@bp.route('/tickets')
+@login_required
+def tickets():
     tickets = ()
     with db_connector.connect().cursor(named_tuple=True) as cursor:
         cursor.execute(TICKET_SEARCH_QUERY, (current_user.id, ))
         tickets = cursor.fetchall()
         print(tickets)
 
-    return render_template("account.html", tickets=tickets)
+    return render_template("account_tickets.html", tickets=tickets)

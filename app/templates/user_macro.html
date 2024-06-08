@@ -32,6 +32,7 @@
             required {% if action=='view' %} disabled {% endif %}>
         <label class="form-label" for="passport">Паспорт</label>
     </div>
+    {% if user.can('see_admin_panel') %}
     <div class="mb-3 form-floating">
         <select class="form-control" name="role" id="role" required {% if action=='view' %} disabled {% endif %}>
             {% for role in roles %}
@@ -42,6 +43,7 @@
         </select>
         <label class="form-label" for="role">Роль</label>
     </div>
+    {% endif %}
     {% if action == 'create' %}
     <button class="btn btn-primary">Создать</button>
     {% elif action == 'edit' %}
