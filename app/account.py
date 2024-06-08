@@ -1,5 +1,5 @@
 from flask import render_template, redirect, render_template, Blueprint, current_app, request, url_for
-from flask_login import login_required
+from flask_login import login_required, current_user
 from app import db_connector
 
 bp = Blueprint('account', __name__, url_prefix='/account')
@@ -15,7 +15,7 @@ TICKET_SEARCH_QUERY = (
     "JOIN stations as arrive_station on arrive_station.id = routes.arrive_station_id "
     "JOIN cities as depart_city on depart_city.id = depart_station.city_id "
     "JOIN cities as arrive_city on arrive_city.id = arrive_station.city_id "
-    "WHERE tickets.owner_id = 2 "
+    "WHERE tickets.owner_id = %s "
 )
 
 @bp.route('/')
@@ -23,7 +23,7 @@ TICKET_SEARCH_QUERY = (
 def index():
     tickets = ()
     with db_connector.connect().cursor(named_tuple=True) as cursor:
-        cursor.execute(TICKET_SEARCH_QUERY)
+        cursor.execute(TICKET_SEARCH_QUERY, (current_user.id, ))
         tickets = cursor.fetchall()
         print(tickets)
 
