@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Билет №</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300..700&family=Montserrat+Alternates:wght@400;700&family=Nunito:wght@400;700&family=Yanone+Kaffeesatz:wght@300;700&display=swap"
+        rel="stylesheet">
+</head>
+
+<body class="container py-3 d-flex flex-column">
+    <header>
+        <h1 class="text-center mb-0">Билет №{{ ticket.ticket_no }}</h1>
+        <div class="line mx-auto mb-3"></div>
+    </header>
+    <main>
+            <!-- Информация о рейса -->
+            <h4 class="text-center mb-4">Поезд {{ ticket.trip_no }}</h4>
+
+            <div>
+                <h4 class="text-center mb-3">Отправление:</h4>
+                <h3 class="text-center">{{ ticket.dep_time }}</h3>
+                <h3 class="text-center mb-0">{{ ticket.dep_city_name }}</h3>
+                <p class="text-center">{{ ticket.dep_station_name }}</p>
+            </div>
+            <div class="line mx-auto my-4"></div>
+            <div>
+                <h4 class="text-center mb-3">Прибытие:</h4>
+                <h3 class="text-center ">{{ ticket.arr_time }}</h3>
+                <h3 class="text-center mb-0">{{ ticket.arr_city_name }}</h3>
+                <p class="text-center">{{ ticket.arr_station_name }}</p>
+            </div>
+            <div class="line mx-auto my-4"></div>
+            <div>
+                <h4 class="text-center">Время в пути:</h4>
+                <h3 class="text-center mb-0">{{ ticket.travel_time }}</h3>
+            </div>
+            <!-- Информация о владельце, количестве занимаемых мест -->
+            <h4 class="text-center mb-0">{{ ticket.fio }}</h4>
+            <p class="text-center">{{ ticket.passport }}</p>
+            <h3 class="text-center mb-0">Забронированно мест:</h3>
+            <h3 class="text-center">{{ ticket.amount }}</h3>
+    </main>
+    <footer class="mt-auto">
+        <h2 class="text-center">
+            Счастливого пути!
+        </h2>
+    </footer>
+</body>
+
+<!-- Пришлось так сделать из-за того, что конвертация в pdf не получала стили из файла почему-то -->
+<style>
+    body {
+        text-align: justify;
+        font-size: 1.1rem;
+        min-height: 100vh;
+        font-family: 'Comfortaa';
+    }
+
+    .line {
+        background-color: #0b5ed8;
+        width: 300px;
+        height: 3px;
+    }
+
+    .hidden {
+        display: none;
+    }
+
+    #showAdditionalFilters {
+        cursor: pointer;
+    }
+</style>
+
+</html>

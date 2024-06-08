@@ -1,5 +1,5 @@
 {% macro trip_card_macro(trip_no, depart_city, arrive_city, depart_time, arrive_time, travel_time, price,
-status='preview') %}
+status='preview', ticket_no=0) %}
 <div class="container rounded-3 p-3 bg-light mb-3">
     <div class="d-flex justify-content-between mb-3">
         <div>№ {{ trip_no }}</div>
@@ -25,7 +25,7 @@ status='preview') %}
         <a class="btn btn-primary" href="{{ url_for('tickets.buy_ticket', trip_no=trip_no ) }}">Купить билет</a>
         {% elif status == 'account_view' %}
         <div>
-            <a class="btn btn-outline-primary" href="#">Скачать билет</a>
+            <a class="btn btn-outline-primary" href="{{ url_for('tickets.download_ticket', ticket_no=ticket_no) }}">Скачать билет</a>
             <a class="btn btn-primary" href="#">Изменить билет</a>
         </div>
         {% endif %}

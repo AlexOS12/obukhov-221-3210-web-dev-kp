@@ -1,9 +1,13 @@
-from flask import render_template, redirect, render_template, Blueprint, current_app, request, url_for, flash
+from flask import render_template, redirect, render_template, Blueprint, current_app, request, url_for, flash, send_file
 from flask_login import login_required, current_user
 from mysql.connector.errors import DatabaseError
 from app import db_connector
+from io import BytesIO
+import pdfkit
 
 bp = Blueprint('tickets', __name__, url_prefix='/tickets')
+
+pdfkit_config = pdfkit.configuration(wkhtmltopdf=r'C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe')
 
 TRIP_SEARCH_QUERY = (
     "SELECT trips.id as 'trip_no', trips.arrive_time as 'arr_time', trips.depart_time as 'dep_time', "
@@ -21,6 +25,23 @@ TRIP_SEARCH_QUERY = (
 INSERT_TICKET_QUERY = (
     "INSERT INTO tickets (owner_id, trip_id, amount, total_price) "
     "VALUES (%(owner_id)s, %(trip_id)s, %(amount)s, %(total_price)s)"
+)
+
+TICKET_INFO_QUERY = (
+    "SELECT tickets.id as 'ticket_no', tickets.amount as 'amount', tickets.total_price as 'price', "
+    "trips.depart_time as 'dep_time', trips.arrive_time as 'arr_time', TIMEDIFF(trips.arrive_time, trips.depart_time) as 'travel_time', "
+    "depart_station.name as 'dep_station_name', depart_city.name as 'dep_city_name', "
+    "arrive_station.name as 'arr_station_name', arrive_city.name as 'arr_city_name', "
+    "trips.id as 'trip_no', users.passport as 'passport', "
+    "CONCAT(users.last_name, ' ', users.first_name, ' ', users.mid_name) as 'fio' "
+    "FROM tickets join trips on tickets.trip_id = trips.id "
+    "JOIN routes on trips.route_id = routes.id "
+    "JOIN stations as depart_station on depart_station.id = routes.depart_station_id "
+    "JOIN stations as arrive_station on arrive_station.id = routes.arrive_station_id "
+    "JOIN cities as depart_city on depart_city.id = depart_station.city_id "
+    "JOIN cities as arrive_city on arrive_city.id = arrive_station.city_id "
+    "JOIN users on users.id = tickets.owner_id "
+    "WHERE tickets.id = %s"
 )
 
 @bp.route('/buy/<int:trip_no>', methods=["GET", "POST"])
@@ -51,3 +72,36 @@ def buy_ticket(trip_no):
         trip = cursor.fetchone()  
 
     return render_template("buy_ticket.html", trip=trip)
+
+def html_to_pdf(html):
+    # pdf = bytes()
+    options = {
+    'page-size': 'A4',
+    'margin-top': '0.25in',
+    'margin-right': '0.25in',
+    'margin-bottom': '0.25in',
+    'margin-left': '0.25in',
+    'encoding': "UTF-8",
+    'no-outline': None
+}
+    pdf = pdfkit.from_string(html, configuration=pdfkit_config, options=options)
+    return pdf
+
+@bp.route('/dowload/<int:ticket_no>')
+def download_ticket(ticket_no):
+    with db_connector.connect().cursor(named_tuple=True) as cursor:
+        cursor.execute(TICKET_INFO_QUERY, (ticket_no, ))
+        ticket = cursor.fetchone()
+        print(ticket)
+
+    html_ticket = render_template("ticket_pdf.html", ticket=ticket)
+    file = BytesIO()
+    
+    pdf_ticket = html_to_pdf(html_ticket)
+    
+    file.write(pdf_ticket)
+    file.seek(0)
+    
+    return send_file(file, mimetype='application/pdf', as_attachment=True, download_name=f"Билет №{ticket_no}.pdf")
+    # return html_ticket
+    

@@ -5,7 +5,7 @@ from app import db_connector
 bp = Blueprint('account', __name__, url_prefix='/account')
 
 TICKET_SEARCH_QUERY = (
-    "SELECT trips.id as 'trip_no', tickets.total_price as 'price', "
+    "SELECT tickets.id as 'ticket_no', trips.id as 'trip_no', tickets.total_price as 'price', "
     "trips.depart_time as 'dep_time', trips.arrive_time as 'arr_time', "
     "TIMEDIFF(trips.arrive_time, trips.depart_time) as 'travel_time', "
     "tickets.amount as 'amount', depart_city.name as 'dep_city', arrive_city.name as 'arr_city' "
