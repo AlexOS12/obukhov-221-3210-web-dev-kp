@@ -3,6 +3,7 @@
 {% from 'user_macro.html' import user_macro %}
 
 {% block content %}
+<h2 class="text-center">Личные данные</h2>
 <form action="{{ url_for('account.edit_self') }}" method="post">
     <div class="mb-3 form-floating">
         <input class="form-control" type="text" name="login" id="login" placeholder="" value="{{ user.login }}" required
@@ -42,5 +43,22 @@
     </div>
     {% endif %}
     <button class="btn btn-primary">Сохранить изменения</button>
+</form>
+
+<h2 class="text-center">Смена пароля</h2>
+<form action="{{ url_for('account.change_pass') }}" method="post">
+    <div class="mb-3 form-floating">
+        <input class="form-control" type="password" name="old_pass" id="old_pass" placeholder="" required>
+        <label class="form-label" for="old_pass">Старый пароль</label>
+    </div>
+    <div class="mb-3 form-floating">
+        <input class="form-control" type="password" name="new_pass" id="new_pass" placeholder="" required>
+        <label class="form-label" for="new_pass">Новый пароль</label>
+    </div>
+    <div class="mb-3 form-floating">
+        <input class="form-control" type="password" name="new_pass_conf" id="new_pass_conf" placeholder="" required>
+        <label class="form-label" for="new_pass_conf">Подтвердите новый пароль</label>
+    </div>
+    <button class="btn btn-primary">Сменить пароль</button>
 </form>
 {% endblock %}

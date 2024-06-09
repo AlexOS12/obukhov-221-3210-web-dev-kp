@@ -8,7 +8,7 @@ class UsersPolicy:
     def see_admin_panel(self):
         return current_user.is_admin()
 
-    def assing_roles(self):
+    def assign_roles(self):
         return current_user.is_admin()
 
     def view_users(self):

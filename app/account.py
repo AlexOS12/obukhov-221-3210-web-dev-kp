@@ -21,6 +21,22 @@ TICKET_SEARCH_QUERY = (
     "WHERE tickets.owner_id = %s "
 )
 
+COMPARE_PASS_QUERY = (
+    "SELECT pass_hash = SHA2(%(old_pass)s, 256) "
+    "FROM users "
+    "WHERE id = %(user_id)s"
+)
+
+CHANGE_PASS_QUERY = (
+    "UPDATE `users` set pass_hash = SHA2(%(new_pass)s, 256) "
+    "WHERE id = %(user_id)s "
+)
+
+CHANGE_PASS_FIELDS = (
+    "old_pass", "new_pass", "new_pass_conf"
+)
+
+
 @bp.route('/edit_self', methods=["POST"])
 @login_required
 @can_user('edit_self')
@@ -30,10 +46,15 @@ def edit_self():
         user = cursor.fetchone()
 
     roles = {}
+    form_fields = get_form_fields(request.form, UPDATE_USER_FIELDS)
+
+    print(form_fields)
+
     if current_user.can('assign_roles'):
         roles = get_roles()
-    form_fields = get_form_fields(request.form, UPDATE_USER_FIELDS)
-    form_fields["role"] = current_user.role_id
+    else:
+        form_fields["role"] = current_user.role_id
+
     form_fields["user_id"] = current_user.id
 
     print(form_fields)
@@ -50,6 +71,33 @@ def edit_self():
         flash("Произошла ошибка изменения данных пользователя", category="danger")
         return render_template("account.html", user=user, roles=roles)
 
+
+@bp.route('change_pass', methods=["POST"])
+@login_required
+def change_pass():
+    form_fields = get_form_fields(request.form, CHANGE_PASS_FIELDS)
+    form_fields["user_id"] = current_user.id
+
+    with db_connector.connect().cursor() as cursor:
+        cursor.execute(COMPARE_PASS_QUERY, form_fields)
+        old_pass_eq = cursor.fetchone()[0]
+
+    if not old_pass_eq:
+        flash("Неверно введен старый пароль!", category="warning")
+    elif form_fields["new_pass"] != form_fields["new_pass_conf"]:
+        flash("Новые пароли не совпадают!", category="warning")
+    else:
+        try:
+            with db_connector.connect().cursor() as cursor:
+                cursor.execute(CHANGE_PASS_QUERY, form_fields)
+            db_connector.connect().commit()
+            flash("Пароль был успешно изменён!", category="success")
+        except DatabaseError:
+            flash("Во время смены пароля произошла ошибка!", category="danger")
+
+    return redirect(url_for("account.index"))
+
+
 @bp.route('/')
 @login_required
 def index():
@@ -59,6 +107,7 @@ def index():
         cursor.execute(GET_ROLES_QUERY)
         roles = cursor.fetchall()
     return render_template("account.html", user=user, roles=roles)
+
 
 @bp.route('/tickets')
 @login_required

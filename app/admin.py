@@ -20,7 +20,7 @@ USER_INFO_QUERY = (
 UPDATE_USER_INFO_QUERY = (
     "UPDATE users "
     "SET role_id = %(role)s, login = %(login)s, last_name = %(last_name)s, first_name = %(first_name)s, "
-    "mid_name = %(mid_name)s "
+    "mid_name = %(mid_name)s, passport = %(passport)s"
     "WHERE users.id = %(user_id)s"
 )
 
