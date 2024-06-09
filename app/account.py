@@ -3,7 +3,7 @@ from flask_login import login_required, current_user, login_user
 from app import db_connector
 from mysql.connector.errors import DatabaseError
 from authorization import can_user, User
-from admin import USER_INFO_QUERY, UPDATE_USER_INFO_QUERY, GET_ROLES_QUERY, get_roles, get_form_fields, UPDATE_USER_FIELDS, CREATE_USER_QUERY
+from admin import USER_INFO_QUERY, UPDATE_USER_INFO_QUERY, GET_ROLES_QUERY, get_roles, get_form_fields, UPDATE_USER_FIELDS, CREATE_USER_QUERY, DELETE_USER_QUERY
 
 bp = Blueprint('account', __name__, url_prefix='/account')
 
@@ -144,6 +144,21 @@ def create():
                 flash("Не удалось создать учётную запись", category="danger")
 
     return render_template("account_create.html")
+
+
+@bp.route('/delete_self', methods=["POST"])
+@login_required
+def delete_self():
+    try:
+        with db_connector.connect().cursor() as cursor:
+            cursor.execute(DELETE_USER_QUERY, (current_user.id, ))
+        db_connector.connect().commit()
+        flash("Учётная запись была успешно удалена", category="success")
+        return redirect(url_for("index"))
+    except DatabaseError as error:
+        flash(error, category="danger")
+        flash("Во время удаления учётной записи произошла ошибка", category="danger")
+        return redirect(url_for("account.index"))
 
 
 @bp.route('/')
