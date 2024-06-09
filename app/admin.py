@@ -9,7 +9,8 @@ bp = Blueprint('admin', __name__, url_prefix='/admin')
 USER_SEARCH_QUERY = (
     "SELECT users.id, users.login, CONCAT (users.last_name, ' ', users.first_name, ' ', users.mid_name) as fio, "
     "roles.name as role_name "
-    "FROM users join roles on users.role_id = roles.id"
+    "FROM users join roles on users.role_id = roles.id "
+    "ORDER by id "
 )
 
 USER_INFO_QUERY = (

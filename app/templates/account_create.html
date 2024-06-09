@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h3 class="text-center">Регистрация</h3>
+<div class="line mx-auto mb-3"></div>
+<form class="mb-3" method="POST">
+    <div class="mb-3 form-floating">
+        <input class="form-control" type="text" id="login" name="login" placeholder="" value="{{ request.form.login }}"
+            required>
+        <label class="form-label" for="login">Логин</label>
+    </div>
+    <div class="mb-3 form-floating">
+        <input class="form-control" type="password" id="password" name="password" placeholder="" required>
+        <label class="form-label" for="password">Пароль</label>
+    </div>
+    <div class="mb-3 form-floating">
+        <input class="form-control" type="password" id="pass_conf" name="pass_conf" placeholder="" required>
+        <label class="form-label" for="pass">Подтвердите пароль</label>
+    </div>
+    <div class="mb-3 form-floating">
+        <input class="form-control" type="text" id="last_name" name="last_name" placeholder=""
+            value="{{ request.form.last_name }}" required>
+        <label class="form-label" for="last_name">Фамилия</label>
+    </div>
+    <div class="mb-3 form-floating">
+        <input class="form-control" type="text" id="first_name" name="first_name" placeholder=""
+            value="{{ request.form.first_name }}" required>
+        <label class="form-label" for="first_name">Имя</label>
+    </div>
+    <div class="mb-3 form-floating">
+        <input class="form-control" type="text" id="mid_name" name="mid_name" placeholder=""
+            value="{{ request.form.mid_name }}" required>
+        <label class="form-label" for="mid_name">Отчество (при наличии)</label>
+    </div>
+    <div class="mb-3 form-floating">
+        <input class="form-control" type="text" id="passport" name="passport" placeholder=""
+            value="{{ request.form.passport }}" required>
+        <label class="form-label" for="passport">Паспорт</label>
+    </div>
+    <button class="btn btn-primary">Создать аккаунт</button>
+</form>
+<a href="{{ url_for('auth.login') }}">Уже есть аккаунт? Войдите</a>
+{% endblock %}

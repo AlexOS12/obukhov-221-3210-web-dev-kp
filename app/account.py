@@ -1,9 +1,9 @@
 from flask import render_template, redirect, render_template, Blueprint, current_app, request, url_for, flash
-from flask_login import login_required, current_user
+from flask_login import login_required, current_user, login_user
 from app import db_connector
 from mysql.connector.errors import DatabaseError
-from authorization import can_user
-from admin import USER_INFO_QUERY, UPDATE_USER_INFO_QUERY, GET_ROLES_QUERY, get_roles, get_form_fields, UPDATE_USER_FIELDS
+from authorization import can_user, User
+from admin import USER_INFO_QUERY, UPDATE_USER_INFO_QUERY, GET_ROLES_QUERY, get_roles, get_form_fields, UPDATE_USER_FIELDS, CREATE_USER_QUERY
 
 bp = Blueprint('account', __name__, url_prefix='/account')
 
@@ -34,6 +34,18 @@ CHANGE_PASS_QUERY = (
 
 CHANGE_PASS_FIELDS = (
     "old_pass", "new_pass", "new_pass_conf"
+)
+
+CREATE_USER_FIELDS = (
+    "login", "password", "pass_conf", "last_name", "first_name", "mid_name", "role", "passport"
+)
+
+CHECK_IF_LOGIN_EXISTS_QUERY = (
+    "SELECT COUNT(*) FROM users WHERE login = %s "
+)
+
+GET_USER_ID_QUERY = (
+    "SELECT id FROM users WHERE login = %s "
 )
 
 
@@ -96,6 +108,42 @@ def change_pass():
             flash("Во время смены пароля произошла ошибка!", category="danger")
 
     return redirect(url_for("account.index"))
+
+
+@bp.route('/create', methods=["GET", "POST"])
+def create():
+    if request.method == "POST":
+        form_fields = get_form_fields(request.form, CREATE_USER_FIELDS)
+        form_fields["role"] = 2
+
+        with db_connector.connect().cursor() as cursor:
+            cursor.execute(CHECK_IF_LOGIN_EXISTS_QUERY,
+                           (form_fields["login"], ))
+            login_exists = cursor.fetchone()[0]
+
+        if login_exists:
+            flash("Выбранный логин уже используется другим пользователем",
+                  category="warning")
+        elif form_fields["password"] != form_fields["pass_conf"]:
+            flash("Пароли должны совпадать!", category="warning")
+        else:
+            try:
+                with db_connector.connect().cursor() as cursor:
+                    cursor.execute(CREATE_USER_QUERY, form_fields)
+                db_connector.connect().commit()
+                with db_connector.connect().cursor() as cursor:
+                    cursor.execute(GET_USER_ID_QUERY, (form_fields["login"], ))
+                    user_id = cursor.fetchone()[0]
+                if user_id:
+                    login_user(
+                        User(user_id, form_fields["login"], form_fields["role"]))
+                    return redirect(url_for('index'))
+            except DatabaseError as error:
+                db_connector.connect().rollback()
+                flash(error, category="danger")
+                flash("Не удалось создать учётную запись", category="danger")
+
+    return render_template("account_create.html")
 
 
 @bp.route('/')
