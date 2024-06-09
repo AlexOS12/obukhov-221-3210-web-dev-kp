@@ -25,8 +25,10 @@ status='preview', ticket_no=0) %}
         <a class="btn btn-primary" href="{{ url_for('tickets.buy_ticket', trip_no=trip_no ) }}">Купить билет</a>
         {% elif status == 'account_view' %}
         <div>
-            <a class="btn btn-outline-primary" href="{{ url_for('tickets.download_ticket', ticket_no=ticket_no) }}">Скачать билет</a>
-            <a class="btn btn-primary" href="#">Изменить билет</a>
+            <a class="btn btn-outline-primary"
+                href="{{ url_for('tickets.download_ticket', ticket_no=ticket_no) }}">Скачать билет</a>
+            <a class="btn btn-primary" href="{{ url_for('tickets.edit_ticket', ticket_no=ticket_no) }}">Изменить
+                билет</a>
         </div>
         {% endif %}
     </div>

@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% from 'trip_card_macro.html' import trip_card_macro %}
+
+{% block content %}
+<h3 class="text-center">Билет №{{ ticket.ticket_no }}</h3>
+<div class="container rounded-3 p-3 bg-light mb-3">
+    <div class="d-flex justify-content-between mb-3">
+        <div>№ {{ ticket.trip_no }}</div>
+        <div class="text-center">{{ ticket.dep_city_name }} -> {{ ticket.arr_city_name }}</div>
+        <div class="text-end">Время в пути: {{ ticket.travel_time }}</div>
+    </div>
+    <div class="d-flex justify-content-between mb-3">
+        <div class="d-flex flex-column justify-content-center">
+            <p class="mb-0">Время отправления:</p>
+            <p>{{ ticket.dep_time }}</p>
+        </div>
+        <div class="d-flex flex-column justify-content-center">
+            <p class="mb-0">Время прибытия:</p>
+            <p class="text">{{ ticket.arr_time }}</p>
+        </div>
+    </div>
+    <div class="d-flex justify-content-start">
+        <p>Старая стоимость: 
+        <p id="old_price">{{ ticket.price }}</p>&nbsp;&#8381;</p>
+    </div>
+    <div class="d-flex justify-content-start">
+        <p>Новая стоимость стоимость: 
+        <p id="new_price"></p>&nbsp;&#8381;</p>
+    </div>
+    <form method="post">
+        <div class="d-flex justify-content-between">
+            <div>
+                <label for="amount">Количество мест:</label>
+                <input type="number" name="amount" id="amount" min="1" max="200" value="{{ ticket.amount }}" required>
+            </div>
+            <div>
+                <button id="editTicketBtn" class="btn btn-primary">Изменить билет за </button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script src="{{ url_for('static', filename='scripts/edit_ticket.js') }}"></script>
+{% endblock %}

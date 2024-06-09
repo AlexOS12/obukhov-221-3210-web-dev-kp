@@ -44,6 +44,50 @@ TICKET_INFO_QUERY = (
     "WHERE tickets.id = %s"
 )
 
+CHECK_TICKET_OWNER_QUERY = (
+    "SELECT %(user_id)s = owner_id FROM tickets "
+    "WHERE id = %(ticket_no)s "
+)
+
+UPDATE_TICKET_QUERY = (
+    "UPDATE tickets set amount = %(amount)s "
+    "WHERE id = %(ticket_no)s "
+)
+
+@bp.route('/edit/<int:ticket_no>', methods=["GET", "POST"])
+@login_required
+def edit_ticket(ticket_no):
+    with db_connector.connect().cursor(named_tuple=True) as cursor:
+        cursor.execute(TICKET_INFO_QUERY, (ticket_no, ))
+        ticket = cursor.fetchone()
+
+    if request.method == "POST":
+        with db_connector.connect().cursor() as cursor:
+            cursor.execute(CHECK_TICKET_OWNER_QUERY, {
+                "user_id" : current_user.id,
+                "ticket_no" : ticket_no
+            })
+            result = cursor.fetchone()[0]
+        if not result:
+            flash("Вы не можете изменить этот билет, поскольку не являетесь его владельцем", category="warning")
+            return redirect(url_for("account.tickets"))
+
+        try:
+            with db_connector.connect().cursor() as cursor:
+                cursor.execute(UPDATE_TICKET_QUERY, {
+                    "ticket_no" : ticket_no,
+                    "amount" : request.form.get("amount")
+                })
+            db_connector.connect().commit()
+            flash("Билет был успешно изменён", category="success")
+            return redirect(url_for("account.tickets"))
+        except DatabaseError as error:
+            db_connector.connect().rollback()
+            flash(error, category="danger")
+            flash("Во время изменения билета произошла ошибка", category="danger")
+
+    return render_template("edit_ticket.html", ticket=ticket)
+
 @bp.route('/buy/<int:trip_no>', methods=["GET", "POST"])
 def buy_ticket(trip_no):
     if request.method == "POST":
