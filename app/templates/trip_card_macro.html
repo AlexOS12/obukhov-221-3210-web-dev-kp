@@ -1,5 +1,5 @@
 {% macro trip_card_macro(trip_no, depart_city, arrive_city, depart_time, arrive_time, travel_time, price,
-status='preview', ticket_no=0) %}
+status='preview', ticket_no=0, amount=0) %}
 <div class="container rounded-3 p-3 bg-light mb-3">
     <div class="d-flex justify-content-between mb-3">
         <div>№ {{ trip_no }}</div>
@@ -16,6 +16,11 @@ status='preview', ticket_no=0) %}
             <p class="text">{{ arrive_time }}</p>
         </div>
     </div>
+    {% if status == 'account_view' %}
+    <div>
+        <p>Мест: {{ amount }}</p>
+    </div>
+    {% endif %}
     <div class="d-flex justify-content-between">
         <div class="d-flex justify-content-start">
             <p>Стоимость: 

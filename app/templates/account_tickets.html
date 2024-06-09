@@ -11,7 +11,7 @@
 
 {% for ticket in tickets %}
     {{ trip_card_macro(ticket.trip_no, ticket.dep_city, ticket.arr_city, ticket.dep_time, ticket.arr_time,
-        ticket.arr_time - ticket.dep_time, ticket.price, 'account_view', ticket.ticket_no) }}
+        ticket.arr_time - ticket.dep_time, ticket.price, status='account_view', ticket_no=ticket.ticket_no, amount=ticket.amount) }}
 {% endfor %}
 
 {% endblock %}
