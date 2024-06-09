@@ -120,7 +120,7 @@ def buy_ticket(trip_no):
 def html_to_pdf(html):
     # pdf = bytes()
     options = {
-    'page-size': 'A4',
+    'page-size': 'A5',
     'margin-top': '0.25in',
     'margin-right': '0.25in',
     'margin-bottom': '0.25in',

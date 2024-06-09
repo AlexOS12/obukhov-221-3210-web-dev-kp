@@ -19,33 +19,35 @@
         <h1 class="text-center mb-0">Билет №{{ ticket.ticket_no }}</h1>
         <div class="line mx-auto mb-3"></div>
     </header>
-    <main>
-            <!-- Информация о рейса -->
-            <h4 class="text-center mb-4">Поезд {{ ticket.trip_no }}</h4>
+    <main class="text-center">
+        <!-- Информация о рейса -->
+        <h4 class=" mb-4">Поезд № {{ ticket.trip_no }}</h4>
 
-            <div>
-                <h4 class="text-center mb-3">Отправление:</h4>
-                <h3 class="text-center">{{ ticket.dep_time }}</h3>
-                <h3 class="text-center mb-0">{{ ticket.dep_city_name }}</h3>
-                <p class="text-center">{{ ticket.dep_station_name }}</p>
-            </div>
-            <div class="line mx-auto my-4"></div>
-            <div>
-                <h4 class="text-center mb-3">Прибытие:</h4>
-                <h3 class="text-center ">{{ ticket.arr_time }}</h3>
-                <h3 class="text-center mb-0">{{ ticket.arr_city_name }}</h3>
-                <p class="text-center">{{ ticket.arr_station_name }}</p>
-            </div>
-            <div class="line mx-auto my-4"></div>
-            <div>
-                <h4 class="text-center">Время в пути:</h4>
-                <h3 class="text-center mb-0">{{ ticket.travel_time }}</h3>
-            </div>
-            <!-- Информация о владельце, количестве занимаемых мест -->
-            <h4 class="text-center mb-0">{{ ticket.fio }}</h4>
-            <p class="text-center">{{ ticket.passport }}</p>
-            <h3 class="text-center mb-0">Забронированно мест:</h3>
-            <h3 class="text-center">{{ ticket.amount }}</h3>
+        <div>
+            <h4 class="mb-3">Отправление:</h4>
+            <h3>{{ ticket.dep_time }}</h3>
+            <h3 class="mb-0">{{ ticket.dep_city_name }}</h3>
+            <p>{{ ticket.dep_station_name }}</p>
+        </div>
+        <div class="line mx-auto my-4"></div>
+        <div>
+            <h4 class="mb-3">Прибытие:</h4>
+            <h3>{{ ticket.arr_time }}</h3>
+            <h3 class="mb-0">{{ ticket.arr_city_name }}</h3>
+            <p>{{ ticket.arr_station_name }}</p>
+        </div>
+        <div class="line mx-auto my-4"></div>
+        <div>
+            <h4>Время в пути:</h4>
+            <h3 class="mb-0">{{ ticket.travel_time }}</h3>
+        </div>
+        <!-- Информация о владельце, количестве занимаемых мест -->
+        <h4 class="mb-3">Сведения о владельце</h4>
+        <p class="mb-0">ФИО</p>
+        <h3 class="mb-1">{{ ticket.fio }}</h3>
+        <h4 class="mb-3">{{ ticket.passport }}</h4>
+        <p class="mb-0">Забронированно мест:</p>
+        <h3 class="">{{ ticket.amount }}</h3>
     </main>
     <footer class="mt-auto">
         <h2 class="text-center">
