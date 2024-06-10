@@ -7,10 +7,8 @@ import pdfkit
 
 bp = Blueprint('tickets', __name__, url_prefix='/tickets')
 
-# pdfkit_config = pdfkit.configuration(
-#     wkhtmltopdf=r'/usr/local/bin/wkhtmltopdf')
 pdfkit_config = pdfkit.configuration(
-    wkhtmltopdf=r"C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe")
+    wkhtmltopdf=r'/usr/local/bin/wkhtmltopdf')
 
 TRIP_SEARCH_QUERY = (
     "SELECT trips.id as 'trip_no', trips.arrive_time as 'arr_time', trips.depart_time as 'dep_time', "
