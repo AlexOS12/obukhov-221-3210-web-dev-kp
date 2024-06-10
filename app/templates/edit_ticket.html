@@ -28,7 +28,7 @@
         <p>Новая стоимость стоимость: 
         <p id="new_price"></p>&nbsp;&#8381;</p>
     </div>
-    <form method="post">
+    <form class="mb-3" method="post">
         <div class="d-flex justify-content-between">
             <div>
                 <label for="amount">Количество мест:</label>
@@ -39,7 +39,35 @@
             </div>
         </div>
     </form>
+    <div class="d-flex">
+        <button type="button" class="ms-auto btn btn-danger" data-bs-toggle="modal" data-bs-target="#delete-modal"
+            data-delete-url="{{ url_for('tickets.delete_ticket', ticket_no = ticket.ticket_no) }}">
+            Удалить билет
+        </button>
+    </div>
+
+</div>
+
+<div class="modal" id="delete-modal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Подтвердите удаление билета</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Вы уверены, что хотите удалить этот билет?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Нет</button>
+                <form action="" method="post">
+                    <button type="submit" class="btn btn-danger">Да</button>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script src="{{ url_for('static', filename='scripts/edit_ticket.js') }}"></script>
+<script src="{{ url_for('static', filename='scripts/delete_ticket.js') }}"></script>
 {% endblock %}
