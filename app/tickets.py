@@ -7,8 +7,10 @@ import pdfkit
 
 bp = Blueprint('tickets', __name__, url_prefix='/tickets')
 
+# pdfkit_config = pdfkit.configuration(
+#     wkhtmltopdf=r'/usr/local/bin/wkhtmltopdf')
 pdfkit_config = pdfkit.configuration(
-    wkhtmltopdf=r'/usr/local/bin/wkhtmltopdf')
+    wkhtmltopdf=r"C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe")
 
 TRIP_SEARCH_QUERY = (
     "SELECT trips.id as 'trip_no', trips.arrive_time as 'arr_time', trips.depart_time as 'dep_time', "
@@ -68,18 +70,18 @@ def edit_ticket(ticket_no):
         cursor.execute(TICKET_INFO_QUERY, (ticket_no, ))
         ticket = cursor.fetchone()
 
-    if request.method == "POST":
-        with db_connector.connect().cursor() as cursor:
-            cursor.execute(CHECK_TICKET_OWNER_QUERY, {
-                "user_id": current_user.id,
-                "ticket_no": ticket_no
-            })
-            result = cursor.fetchone()[0]
+    with db_connector.connect().cursor() as cursor:
+        cursor.execute(CHECK_TICKET_OWNER_QUERY, {
+            "user_id": current_user.id,
+            "ticket_no": ticket_no
+        })
+        result = cursor.fetchone()[0]
         if not result:
             flash("Вы не можете изменить этот билет, поскольку не являетесь его владельцем",
                   category="warning")
             return redirect(url_for("account.tickets"))
 
+    if request.method == "POST":
         try:
             with db_connector.connect().cursor() as cursor:
                 cursor.execute(UPDATE_TICKET_QUERY, {
