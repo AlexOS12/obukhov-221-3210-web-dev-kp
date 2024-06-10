@@ -81,6 +81,8 @@ def login():
         login_user(User(user.id, user.login, user.role_id), remember=remember)
         target_page = request.args.get("next", url_for("index"))
         return redirect(target_page)
+    else:
+        flash("Неверно указаны имя или пароль", category="warning")
 
     return render_template("auth.html")
 
