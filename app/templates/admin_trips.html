@@ -32,7 +32,7 @@
             <td>{{ trip.price_per_person }}&#8381;</td>
             <td>{{ trip.available_places }}</td>
             <td>
-                <div class="d-flex justify-content-evenly">
+                <div class="d-flex justify-content-center">
                     <a class="btn btn-primary" href="{{ url_for('admin.view_trip', trip_id=trip.trip_id) }}">
                         <i class="bi bi-eye-fill"></i>
                     </a>

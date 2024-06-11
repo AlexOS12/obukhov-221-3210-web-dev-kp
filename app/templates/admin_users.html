@@ -18,16 +18,18 @@
             <td>{{ user.fio }}</td>
             <td>{{ user.role_name }}</td>
             <td>
-                <a class="btn btn-primary" href="{{ url_for('admin.view_user', user_id=user.id) }}">
-                    <i class="bi bi-eye-fill"></i>
-                </a>
-                <a class="btn btn-primary" href="{{ url_for('admin.edit_user', user_id=user.id) }}">
-                    <i class="bi bi-pencil"></i>
-                </a>
-                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#delete-modal"
-                    data-delete-url="{{ url_for('admin.delete_user', user_id=user.id) }}">
-                    <i class="bi bi-trash-fill"></i>
-                </button>
+                <div class="d-flex justify-content-center">
+                    <a class="btn btn-primary" href="{{ url_for('admin.view_user', user_id=user.id) }}">
+                        <i class="bi bi-eye-fill"></i>
+                    </a>
+                    <a class="mx-1 btn btn-primary" href="{{ url_for('admin.edit_user', user_id=user.id) }}">
+                        <i class="bi bi-pencil"></i>
+                    </a>
+                    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#delete-modal"
+                        data-delete-url="{{ url_for('admin.delete_user', user_id=user.id) }}">
+                        <i class="bi bi-trash-fill"></i>
+                    </button>
+                </div>
             </td>
         </tr>
         {% endfor %}
