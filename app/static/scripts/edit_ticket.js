@@ -21,4 +21,7 @@ window.onload = function () {
 
     amount.oninput = calculatePrice;
     calculatePrice();
+
+    let deleteModal = document.getElementById("delete-modal");
+    deleteModal.addEventListener("show.bs.modal", fillModal);
 }

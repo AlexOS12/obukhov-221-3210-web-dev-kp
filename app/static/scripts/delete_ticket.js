@@ -5,8 +5,3 @@ function fillModal(event) {
     let modalForm = event.target.querySelector("form");
     modalForm.action = deleteUrl;
 }
-
-window.onload = function () {
-    let deleteModal = document.getElementById("delete-modal");
-    deleteModal.addEventListener("show.bs.modal", fillModal);
-}
