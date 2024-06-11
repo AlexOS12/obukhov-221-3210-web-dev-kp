@@ -5,10 +5,6 @@
 {% block content %}
 <h4>Мои билеты</h4>
 
-<div class="d-flex justify-content-center mb-3">
-    <button class="btn btn-outline-secondary mx-auto">Показать старые билеты</button>
-</div>
-
 {% for ticket in tickets %}
     {{ trip_card_macro(ticket.trip_no, ticket.dep_city, ticket.arr_city, ticket.dep_time, ticket.arr_time,
         ticket.arr_time - ticket.dep_time, ticket.price, status='account_view', ticket_no=ticket.ticket_no, amount=ticket.amount) }}
