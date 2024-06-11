@@ -3,7 +3,7 @@
 {% from 'trip_card_macro.html' import trip_card_macro %}
 
 {% block content %}
-<h4>Мои билеты</h4>
+<h4 class="text-center mb-3">Мои билеты</h4>
 
 {% for ticket in tickets %}
     {{ trip_card_macro(ticket.trip_no, ticket.dep_city, ticket.arr_city, ticket.dep_time, ticket.arr_time,
