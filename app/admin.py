@@ -1,6 +1,6 @@
 from flask import render_template, redirect, render_template, Blueprint, current_app, request, url_for, flash, send_file
 from flask_login import login_required, current_user
-from mysql.connector.errors import DatabaseError
+from mysql.connector.errors import DatabaseError, IntegrityError 
 from app import db_connector
 from authorization import can_user
 
@@ -306,7 +306,10 @@ def delete_route(route_id):
         flash("Маршрут был успешно удалён", category="success")
     except DatabaseError as error:
         db_connector.connect().rollback()
-        flash("Произошла ошибка во время удаления маршрута", category="danger")
+        if error.errno == 1451:
+            flash(f"Нельзя удалить маршрут, если есть рейсы, следующие по этому маршруту", category="danger")
+        else:
+            flash(f"Произошла ошибка во время удаления маршрута", category="danger")
 
     return redirect(url_for("admin.routes"))
 
@@ -376,7 +379,6 @@ def edit_trip(trip_id):
         return redirect(url_for("admin.trips"))
     except DatabaseError as error:
         db_connector.connect().rollback()
-        flash(error, category="danger")
         flash("Произошла ошибка во время изменения рейса", category="danger")
     return render_template("edit_trip.html", trip=trip, routes=routes)
 
@@ -391,7 +393,6 @@ def delete_trip(trip_id):
         flash("Маршрут был успешно удалён", category="success")
     except DatabaseError as error:
         db_connector.connect().rollback()
-        flash(error, category="danger")
         flash("Во время удаления рейса произошла ошибка", category="danger")
     return redirect(url_for("admin.trips"))
 
@@ -415,6 +416,8 @@ def create_trip():
         return redirect(url_for("admin.trips"))
     except DatabaseError as error:
         db_connector.connect().rollback()
-        flash(error, category="danger")
         flash("Произошла ошибка во время создания рейса", category="danger")
+    except IntegrityError as error:
+        db_connector.connect().rollback()
+        flash(f"{error}")
     return render_template("create_trip.html", trip=fields, routes=routes)
