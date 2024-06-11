@@ -393,7 +393,10 @@ def delete_trip(trip_id):
         flash("Маршрут был успешно удалён", category="success")
     except DatabaseError as error:
         db_connector.connect().rollback()
-        flash("Во время удаления рейса произошла ошибка", category="danger")
+        if error.errno == 1451:
+            flash("Нельзя удалить рейс, если на него куплены билеты", category="danger")
+        else:    
+            flash("Во время удаления рейса произошла ошибка", category="danger")
     return redirect(url_for("admin.trips"))
 
 @bp.route('trips/create', methods=["GET", "POST"])
