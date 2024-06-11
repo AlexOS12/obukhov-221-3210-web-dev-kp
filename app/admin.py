@@ -56,6 +56,7 @@ GET_ROUTES_QUERY = (
     "JOIN stations as arrive_station on arrive_station.id = routes.arrive_station_id "
     "JOIN cities as depart_city on depart_city.id = depart_station.city_id "
     "JOIN cities as arrive_city on arrive_city.id = arrive_station.city_id "
+    "ORDER BY route_id "
 )
 
 GET_STATION_CITIES_INFO = (
