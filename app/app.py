@@ -93,9 +93,3 @@ def schedule():
         print(cursor.statement)
 
     return render_template("schedule.html", form=request.form, trips=trips, post=request.method=="POST")
-
-
-@app.route('/tickets')
-@login_required
-def tickets():
-    return render_template("tickets.html")

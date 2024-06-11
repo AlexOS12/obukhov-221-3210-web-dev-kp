@@ -30,7 +30,6 @@ INSERT_TICKET_QUERY = (
 
 TICKET_INFO_QUERY = (
     "SELECT tickets.id as 'ticket_no', tickets.owner_id as 'owner_id', tickets.amount as 'amount', tickets.total_price as 'price', "
-    # "SELECT tickets.id as 'ticket_no', tickets.amount as 'amount', tickets.total_price as 'price', "
     "trips.depart_time as 'dep_time', trips.arrive_time as 'arr_time', TIMEDIFF(trips.arrive_time, trips.depart_time) as 'travel_time', "
     "depart_station.name as 'dep_station_name', depart_city.name as 'dep_city_name', "
     "arrive_station.name as 'arr_station_name', arrive_city.name as 'arr_city_name', "
