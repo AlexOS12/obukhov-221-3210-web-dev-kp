@@ -3,5 +3,6 @@
 {% from 'route_macro.html' import route_macro %}
 
 {% block content %}
+    <h2 class="text-center mb-3">Создание маршрута</h2>
     {{ route_macro({}, stations_and_cities, action='create') }}
 {% endblock %}

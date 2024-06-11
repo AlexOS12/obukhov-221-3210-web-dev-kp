@@ -3,6 +3,6 @@
 {% from 'route_macro.html' import route_macro %}
 
 {% block content %}
-    <h2>Маршрут №{{route.id}}</h2>
+    <h2 class="text-center mb-3">Маршрут №{{route.id}}</h2>
     {{ route_macro(route, stations_and_cities, action='view') }}
 {% endblock %}

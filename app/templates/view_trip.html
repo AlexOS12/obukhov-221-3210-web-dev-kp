@@ -3,6 +3,6 @@
 {% from 'trip_macro.html' import trip_macro %}
 
 {% block content %}
-    <h2>Рейс №{{trip.id}}</h2>
+    <h2 class="text-center mb-3">Рейс №{{trip.id}}</h2>
     {{ trip_macro(trip, routes, action='view') }}
 {% endblock %}

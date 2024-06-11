@@ -402,7 +402,7 @@ def create_trip():
         routes = cursor.fetchall()
 
     if request.method == "GET":
-        return render_template("edit_trip.html", trip={}, routes=routes)
+        return render_template("create_trip.html", trip={}, routes=routes)
     
     fields = get_form_fields(request.form, UPDATE_TRIP_FIELDS)
 

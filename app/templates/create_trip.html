@@ -3,5 +3,6 @@
 {% from 'trip_macro.html' import trip_macro %}
 
 {% block content %}
+    <h2 class="text-center mb-3">Создание рейса</h2>
     {{ trip_macro(trip, routes, action='create') }}
 {% endblock %}
